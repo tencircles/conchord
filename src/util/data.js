@@ -1,11 +1,14 @@
-const NOTE = "([a-gA-G](b|#)?)";
-const OCT = "(\\d{1,2})?";
+const NOTE = "([a-gA-G](b|#|♮)?)";
+const OCT = "([0-9]0?)?";
 const QUAL  = "(major|minor|diminished|augmented|maj|min|dim|aug|M|m|°)?";
 const SEV = "(6|7|9|11|13)?";
-const EXT = "([#b]?(?:5|6|7|9|11|13))?";
+const EXT = "([#b]?(?:[Mm](?:aj|in(?:or)?)?)?(?:5|6|7|9|11|13))?";
 const MOD = "(sus|add|min|maj)?";
 const OVER = "(?:\\\/)?([a-gA-G][#b]?)?";
-const NAT = "♮";
+
+export const NAT = "♮";
+export const FLAT = "b";
+export const SHARP = "#";
 
 export const R_MAJ = /M(?!i)(?:aj(?:or)?)?|m(?:aj(?:or)?)/;
 export const R_MIN = /M(?:in(?:or)?)|m(?!a)(?:in(?:or)?)?/;
@@ -14,16 +17,15 @@ export const R_DIM = /[Dd]im(?:inished)?/;
 export const R_PER = /[Pp](?:erfect)?/;
 export const R_ACC = /[#b]/;
 
-export const N_MAJ   = "major";
-export const N_MIN   = "minor";
-export const N_AUG   = "augmented";
-export const N_DIM   = "diminished";
-export const N_PER   = "perfect";
-
-export const MAJ   = 0;
-export const MIN   = 1;
-export const AUG   = 2;
-export const DIM   = 3;
+export const MAJ   = "major";
+export const MIN   = "minor";
+export const AUG   = "augmented";
+export const DIM   = "diminished";
+export const DOM   = "dominant";
+export const PER   = "perfect";
+export const ADD   = "add";
+export const SUS   = "sus";
+export const NONE  = "none";
 
 export var extension = new Set([6, 7, 9, 11, 13]);
 export var perfect   = new Set([0, 5, 7, 12]);
@@ -79,6 +81,7 @@ export var regex  = {
     diminished : R_DIM,
     perf       : R_PER,
     accidental : R_ACC,
+    extensionNumber: /6|7|9|11|13/,
     modifiers: {
         chord: {
             "add": /add/i,
@@ -160,6 +163,10 @@ export var interval = {
     }
 };
 export var modifiers = {
+    accidental: {
+        [FLAT]: -1,
+        [SHARP]: 1
+    },
     interval: {
         "perfect": 0,
         "maj": 0,

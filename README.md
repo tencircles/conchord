@@ -4,16 +4,17 @@ Music theory on the web
 ## GOALS
 
 1. Create Notes
-    a. from string *
-    b. from midiNote *
+* from string *
+* from midiNote *
 
 2. Create Chords
-    a. from string *
-    b. from Note *
+
+* from string *
+* from Note *
 
 3. Transpose notes up/down
-    a. by interval name *
-    b. by midiNote *
+    a. by interval name
+    b. by midiNote
     c. by scale degree (in key)
 
 4. Transpose Chords

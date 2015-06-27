@@ -1,5 +1,4 @@
 import * as _ from "./util";
-import * as d from "./data";
 
 const MALFORMED_ERR = "Malformed note string ";
 const RANGE_ERR     = "Note is out of 0-127 midi range";
@@ -11,10 +10,10 @@ export class Note {
         if (!(this instanceof Note)) {
             return new Note(n, acc);
         }
-        console.log("new note from", n, acc);
+        //console.log("new note from", n, acc);
         if (typeof n === "string") {
             // is string representation
-            if (d.regex.noteString.test(n)) {
+            if (_.is.noteString(n)) {
                 this[X] = noteFromString(n);
             } else {
                 throw new TypeError(MALFORMED_ERR + n);
@@ -32,7 +31,7 @@ export class Note {
     }
     transpose (by) {
         if (typeof by === "string") {
-            if (d.regex.interval.test(by)) {
+            if (_.is.interval(by)) {
                 return transposeByInterval(this, by);
             } else if (!isNaN(parseInt(by))) {
                 return new Note(this.midiNote + by);
@@ -61,17 +60,9 @@ export class Note {
         return this[X].get("accidental");
     }
 }
-export var make = function makeNote (n, acc) {
-    if (/[#b]/.test(acc)) {
-        return new Note(n, acc);
-    } else {
-        return new Note(n);
-    }
-};
-
 function noteFromString (string) {
     let map   = new Map();
-    let match = d.regex.noteString.exec(_.capitalize(string));
+    let match = _.regex.noteString.exec(_.capitalize(string));
     let [
         fullName,
         pitchName,
@@ -80,10 +71,10 @@ function noteFromString (string) {
     ] = match;
 
     octave = ~~octave;
-    accidental = accidental || "";
+    accidental = _.normalizeAccidental(accidental);
 
-    let pitchClass = _.pitchClassByName(pitchName);
-    let number     = _.noteNumber(octave, pitchClass);
+    let pitchClass = _.pitchName.toPitchClass(pitchName);
+    let number     = octave * 12 + pitchClass;
 
     map.set("midiNote"  , number);
     map.set("octave"    , octave);
@@ -95,12 +86,13 @@ function noteFromString (string) {
     return map;
 }
 function noteFromNumber (number, acc) {
+    acc = _.normalizeAccidental(acc) || "#";
     let map        = new Map();
     let midiNote   = number;
     let accidental = acc || "";
-    let octave     = _.octave(number);
-    let pitchClass = _.pitchClassByNumber(number);
-    let pitchName  = _.pitchNameByClass(pitchClass, acc);
+    let octave     = _.midiNote.toOctave(number);
+    let pitchClass = _.midiNote.toPitchClass(number);
+    let pitchName  = _.pitchClass.toPitchName(pitchClass, acc);
     let fullName   = pitchName + octave;
 
     map.set("midiNote"  , number);
